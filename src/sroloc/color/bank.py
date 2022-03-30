@@ -27,7 +27,7 @@ class ColorBank(Generic[ColorType], ABC):
         try:
             return cls._BANK[name]  # type: ignore
         except KeyError:
-            if cls._DEFAULT_COLOR:
+            if cls._DEFAULT_COLOR is not None:
                 return cls._DEFAULT_COLOR  # type: ignore
 
             raise UnknownColorError(name)

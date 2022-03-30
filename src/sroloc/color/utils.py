@@ -1,3 +1,6 @@
+from typing import Generator
+
+
 class UnknownColorError(ValueError):
     def __init__(self, color_name: str) -> None:
         self.color_name = color_name
@@ -77,7 +80,13 @@ class RgbColor:
         hex_value = ''.join(f'{i:02x}' for i in self)
         return '#' + hex_value
 
-    def __iter__(self):
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, RgbColor):
+            raise NotImplementedError()
+
+        return tuple(self) == tuple(other)
+
+    def __iter__(self) -> Generator[int, None, None]:
         yield self.r
         yield self.g
         yield self.b
@@ -92,6 +101,9 @@ class RgbColor:
     def __format__(self, format_spec: str) -> str:
         if format_spec in ['h', 'hex']:
             return self.as_hex()
+
+        if not format_spec:
+            return str(self)
 
         raise ValueError(
             f'Invalid format specifier: {format_spec!r}'

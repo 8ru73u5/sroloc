@@ -21,7 +21,7 @@ class TrueColor(ColorBank[RgbColor]):
             try:
                 return RgbColor.from_hex(name)
             except ValueError:
-                if cls._DEFAULT_COLOR:
+                if cls._DEFAULT_COLOR is not None:
                     return cls._DEFAULT_COLOR
 
                 raise UnknownColorError(name)
