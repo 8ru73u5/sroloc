@@ -1,11 +1,11 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from sroloc.color.bank import ColorBank
-from sroloc.color.utils import RgbColor, UnknownColorError
+from sroloc.color.utils import RgbColor, UnknownColorError, is_hex_color
 
 
 class TrueColor(ColorBank[RgbColor]):
-    _DEFAULT_COLOR = RgbColor(255, 255, 255)
+    _DEFAULT_COLOR: Optional[RgbColor] = RgbColor(255, 255, 255)
     _BANK: Dict[str, RgbColor] = dict()
 
     @classmethod
@@ -25,6 +25,10 @@ class TrueColor(ColorBank[RgbColor]):
                     return cls._DEFAULT_COLOR
 
                 raise UnknownColorError(name)
+
+    @classmethod
+    def has_color(cls, name: str) -> bool:
+        return is_hex_color(name) or super().has_color(name)
 
     @classmethod
     def fg_color_code(cls, color: str) -> str:

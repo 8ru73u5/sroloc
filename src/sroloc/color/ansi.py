@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import ClassVar
+from typing import ClassVar, Optional, Dict
 
 from sroloc.color.bank import ColorBank
 from sroloc.color.utils import InvalidAnsiColorValueError
@@ -287,8 +287,8 @@ class ANSIColor(ColorBank[int], ABC):
 
 
 class BasicColor(ANSIColor):
-    _BANK = _ANSI_BASIC_COLORS
-    _DEFAULT_COLOR = _BANK['white']
+    _BANK: Dict[str, int] = _ANSI_BASIC_COLORS
+    _DEFAULT_COLOR: Optional[int] = _BANK['white']
     _BITS_PER_COLOR = 3
 
     @classmethod
@@ -303,8 +303,8 @@ class BasicColor(ANSIColor):
 
 
 class ExtendedColor(ANSIColor):
-    _BANK = _ANSI_EXTENDED_COLORS
-    _DEFAULT_COLOR = _BANK['white']
+    _BANK: Dict[str, int] = _ANSI_EXTENDED_COLORS
+    _DEFAULT_COLOR: Optional[int] = _BANK['white']
     _BITS_PER_COLOR = 8
 
     @classmethod

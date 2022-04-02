@@ -1,3 +1,4 @@
+import re
 from typing import Generator
 
 
@@ -18,10 +19,18 @@ class InvalidAnsiColorValueError(ValueError):
 
 
 class RgbToHexConversionError(ValueError):
-    def __init__(self, reason: str, value: str) -> None:
-        self.reason = reason
+    def __init__(self, value: str) -> None:
         self.value = value
-        super().__init__(f'Could not convert to RGB ({reason}): {value!r}')
+        super().__init__(f'Could not convert hex to RGB: {value!r}')
+
+
+_HEX_COLOR_REGEX = re.compile(
+    '#[0-9a-f]{3}(([0-9a-f]{3})|([0-9a-f]{5}))?', re.I
+)
+
+
+def is_hex_color(hex_color: str) -> bool:
+    return _HEX_COLOR_REGEX.fullmatch(hex_color.strip()) is not None
 
 
 class RgbColor:
@@ -40,15 +49,9 @@ class RgbColor:
     @staticmethod
     def from_hex(hex_color: str) -> 'RgbColor':
         hex_color = hex_color.strip()
-        _initial_value = hex_color
 
-        # Check if empty
-        if len(hex_color) == 0:
-            raise RgbToHexConversionError('empty value', _initial_value)
-
-        # Check prefix
-        if hex_color[0] != '#':
-            raise RgbToHexConversionError('invalid prefix', _initial_value)
+        if not is_hex_color(hex_color):
+            raise RgbToHexConversionError(hex_color)
 
         # Remove prefix
         hex_color = hex_color[1:]
@@ -57,18 +60,11 @@ class RgbColor:
         if len(hex_color) == 8:
             hex_color = hex_color[:6]
 
-        # Check length
-        if len(hex_color) not in [3, 6]:
-            raise RgbToHexConversionError('invalid length', _initial_value)
-
         # Convert shorthand form to full form
         if len(hex_color) == 3:
             hex_color = hex_color[0] * 2 + hex_color[1] * 2 + hex_color[2] * 2
 
-        try:
-            color_value = int(hex_color, 16)
-        except ValueError:
-            raise RgbToHexConversionError('invalid hex value', _initial_value)
+        color_value = int(hex_color, 16)
 
         r = (color_value >> 16) & 0xff
         g = (color_value >> 8) & 0xff
